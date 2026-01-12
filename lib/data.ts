@@ -52,22 +52,6 @@ export const disciplinas: Disciplina[] = [
       "Definição de algoritmo, análise de algoritmos, noções de linguagem de alto nível, processos de compilação e interpretação. Procedimentos e Funções. Ponteiros. Alocação dinâmica de memória. Estrutura de dados. Espaço de Nomes. Entrada e saída com arquivos. Técnicas para melhoria do rendimento em programação.",
   },
   {
-    id: "CC123",
-    nome: "ALGEBRA LINEAR PARA COMPUTACAO",
-    preRequisito: "CC118",
-    semestre: 2,
-    ementa:
-      "Sistemas de equações lineares. Determinantes. Espaços vetoriais. Transformações lineares. Autovalores e autovetores. Aplicações.",
-  },
-  {
-    id: "CC121",
-    nome: "ARQUITETURA DE COMPUTADORES",
-    preRequisito: "CC119",
-    semestre: 2,
-    ementa:
-      "Evolução dos computadores, desempenho, projeto do conjunto de instruções, projeto do processador, pipeline e paralelismo, organização de memória, interface de entrada e saída, arquiteturas multi-processadores.",
-  },
-  {
     id: "CC122",
     nome: "CALCULO DIFERENCIAL E INTEGRAL II",
     preRequisito: "CC117",
@@ -76,12 +60,12 @@ export const disciplinas: Disciplina[] = [
       "Integral de Riemann e Teorema Fundamental do Cálculo. Técnicas de primitivação. Sequências e séries numéricas. Séries de potência e de Fourier. Equações diferenciais ordinárias lineares.",
   },
   {
-    id: "CC124",
-    nome: "FISICA PARA COMPUTACAO",
-    preRequisito: "CC117",
+    id: "CC123",
+    nome: "ALGEBRA LINEAR PARA COMPUTACAO",
+    preRequisito: "CC118",
     semestre: 2,
     ementa:
-      "Medidas Físicas, Eletrostática, Eletrodinâmica, Oscilações, Ondas, Eletromagnetismo.",
+      "Sistemas de equações lineares. Determinantes. Espaços vetoriais. Transformações lineares. Autovalores e autovetores. Aplicações.",
   },
   {
     id: "CC125",
@@ -92,12 +76,28 @@ export const disciplinas: Disciplina[] = [
       "Conjuntos. Lógica proposicional. Métodos de demonstração. Lógica de predicados.",
   },
   {
+    id: "CC121",
+    nome: "ARQUITETURA DE COMPUTADORES",
+    preRequisito: "CC119",
+    semestre: 2,
+    ementa:
+      "Evolução dos computadores, desempenho, projeto do conjunto de instruções, projeto do processador, pipeline e paralelismo, organização de memória, interface de entrada e saída, arquiteturas multi-processadores.",
+  },
+  {
     id: "CC120",
     nome: "PROGRAMACAO ORIENTADA A OBJETO",
     preRequisito: "CC115",
     semestre: 2,
     ementa:
       "Ponteiros. Alocação dinâmica de memória. Espaço de Nomes. Entrada e saída com arquivos. Classes, Objetos, Métodos. Encapsulamento de atributos e métodos. Abstração. Membros. Herança. Polimorfismo. Construtores e Destrutores. Relacionamento entre classes. Membros estáticos e virtuais. Biblioteca padrão. Programação genérica (templates).",
+  },
+  {
+    id: "CC124",
+    nome: "FISICA PARA COMPUTACAO",
+    preRequisito: "CC117",
+    semestre: 2,
+    ementa:
+      "Medidas Físicas, Eletrostática, Eletrodinâmica, Oscilações, Ondas, Eletromagnetismo.",
   },
   {
     id: "CC128",
@@ -113,6 +113,21 @@ export const disciplinas: Disciplina[] = [
     semestre: 3,
     ementa:
       "Introdução à computação gráfica. Computação Gráfica Bidimensional: primitivas 2D, atributos, transformações geométricas e animação. Computação Gráfica Tridimensional; primitivas 3D, rasterização, ray tracing, transformações espaciais, textualização, iluminação e animação.",
+  },
+  {
+    id: "CC131",
+    nome: "TEORIA DOS AUTOMATOS E LING. FORMAIS",
+    preRequisito: "CC125",
+    semestre: 3,
+    ementa: "",
+  },
+  {
+    id: "CC127",
+    nome: "SISTEMAS OPERACIONAIS",
+    preRequisito: "CC121",
+    semestre: 3,
+    ementa:
+      "Serviços de sistemas operacionais. Gerência do processador. Programação concorrente e deadlock. Gerência de memória. Gerência de arquivos. Gerência de entrada e saída, Virtualização. Segurança.",
   },
   {
     id: "CC126",
@@ -131,19 +146,12 @@ export const disciplinas: Disciplina[] = [
       "Eventos e probabilidade. Espaços amostrais finitos. Probabilidade condicionada e independência. Esperança matemática, variância e coeficiente de correlação. Variáveis aleatórias discretas. Variáveis aleatórias contínuas. Regressão e correlação. Testes de hipóteses.",
   },
   {
-    id: "CC127",
-    nome: "SISTEMAS OPERACIONAIS",
-    preRequisito: "CC121",
-    semestre: 3,
+    id: "CC135",
+    nome: "CALCULO NUMERICO",
+    preRequisito: "CC128",
+    semestre: 4,
     ementa:
-      "Serviços de sistemas operacionais. Gerência do processador. Programação concorrente e deadlock. Gerência de memória. Gerência de arquivos. Gerência de entrada e saída, Virtualização. Segurança.",
-  },
-  {
-    id: "CC131",
-    nome: "TEORIA DOS AUTOMATOS E LING. FORMAIS",
-    preRequisito: "CC125",
-    semestre: 3,
-    ementa: "",
+      "Aspectos básicos da Computação Numérica. Aritmética de máquina e erros. Solução de equações transcendentes. Estudos das Reizes de Polinômio. Interpolação e aproximação. Sistemas de equações lineares. Integração numérica.",
   },
   {
     id: "CC134",
@@ -154,36 +162,20 @@ export const disciplinas: Disciplina[] = [
       "Fundamentos de avaliação de desempenho, seleção de técnicas, métricas e cargas de trabalho. Experimentação: intervalo de confiança, teste de hipótese, regressão linear e planejamento de experimentos. Simulação: conceitos, geração de números aleatórios, geração de variáveis aleatórias, método de Monte Carlo. Modelagem Analítica: conceitos de processos estocásticos, teoria das filas, fila única, rede de filas e suas aplicações.",
   },
   {
-    id: "CC137",
-    nome: "BANCO DE DADOS",
-    preRequisito: "CC120",
-    semestre: 4,
-    ementa:
-      "Introdução a Bancos de Dados e Sistemas Gerenciadores de Bancos de Dados. Tipos de Banco de Dados, Projeto conceitual de banco de dados; Projeto Lógico de um banco de dados, Comandos SQL, Criando aplicações com bancos de dados.",
-  },
-  {
-    id: "CC135",
-    nome: "CALCULO NUMERICO",
-    preRequisito: "CC128",
-    semestre: 4,
-    ementa:
-      "Aspectos básicos da Computação Numérica. Aritmética de máquina e erros. Solução de equações transcendentes. Estudos das Reizes de Polinômio. Interpolação e aproximação. Sistemas de equações lineares. Integração numérica.",
-  },
-  {
-    id: "CC132",
-    nome: "ENGENHARIA DE SOFTWARE",
-    preRequisito: "CC120",
-    semestre: 4,
-    ementa:
-      "Fundamentos da Engenharia de Software, Processos de software, Desenvolvimento Ágil, Engenharia de Requisitos, Modelagem de Sistemas, Projeto e Implementação, Verificação e Validação, Testes e Evolução.",
-  },
-  {
     id: "CC136",
     nome: "TEORIA DA COMPUTABILIDADE",
     preRequisito: "CC131",
     semestre: 4,
     ementa:
       "Máquina de Turing: MT como Reconhecedor de Linguagens e Avaliador de Funções; Hierarquia de Chomsky; Decidibilidade: Problemas de Decisão, Tese de Church Turing, O Problema da Parada, A Máquina Universal, Redutibilidade de Problemas e Problemas Indecidíveis de Linguagem Livre de Contexto; Computação Numérica: Computação de Funções, Funções Numéricas, Composições de Funções e Funções Não Computáveis; Funções M-Recursivas: Funções Primitivas Recursivas, Operadores de Limite, Funções de Divisões, Funções Parcialmente Computáveis e M-Recursivas.",
+  },
+  {
+    id: "CC137",
+    nome: "BANCO DE DADOS",
+    preRequisito: "CC120",
+    semestre: 4,
+    ementa:
+      "Introdução a Bancos de Dados e Sistemas Gerenciadores de Bancos de Dados. Tipos de Banco de Dados, Projeto conceitual de banco de dados; Projeto Lógico de um banco de dados, Comandos SQL, Criando aplicações com bancos de dados.",
   },
   {
     id: "CC133",
@@ -194,12 +186,12 @@ export const disciplinas: Disciplina[] = [
       "Notação e Definições; Representação de Grafos; Ordenação Topológica; Componentes Fortemente Conexos; Árvore Geradora Mínima; Caminho Mínimo em Grafos; Rede de Fluxos; Coloração de Grafos;",
   },
   {
-    id: "CC141",
-    nome: "ANALISE E PROJETO DE SOFTWARE",
-    preRequisito: "CC132",
-    semestre: 5,
+    id: "CC132",
+    nome: "ENGENHARIA DE SOFTWARE",
+    preRequisito: "CC120",
+    semestre: 4,
     ementa:
-      "Introdução a Modelagem de sistemas. Linguagem de Modelagem Unificada (UML). Processos de desenvolvimento de software. Modelagem de Requisitos. Modelagem de classes de análise. Modelagem de interação. Projeto de classes de software. Projeto de Arquitetura. Projeto de Banco de dados.",
+      "Fundamentos da Engenharia de Software, Processos de software, Desenvolvimento Ágil, Engenharia de Requisitos, Modelagem de Sistemas, Projeto e Implementação, Verificação e Validação, Testes e Evolução.",
   },
   {
     id: "CC154",
@@ -207,6 +199,14 @@ export const disciplinas: Disciplina[] = [
     preRequisito: null,
     semestre: 5,
     ementa: "",
+  },
+  {
+    id: "CC139",
+    nome: "REDES DE COMPUTADORES",
+    preRequisito: "CC134",
+    semestre: 5,
+    ementa:
+      "Introdução à comunicação de dados, Camada fisica, Camada de enlace, Camada de Rede, Camada de Transporte, Camada de Aplicação, Novas tecnologias e tendências.",
   },
   {
     id: "CC140",
@@ -233,12 +233,12 @@ export const disciplinas: Disciplina[] = [
       "Análise de Algoritmos, Notação Assintótica, Provas de Corretude, Algoritmos Determinísticos, Algoritmos Não Determinísticos, Complexidade.",
   },
   {
-    id: "CC139",
-    nome: "REDES DE COMPUTADORES",
-    preRequisito: "CC134",
+    id: "CC141",
+    nome: "ANALISE E PROJETO DE SOFTWARE",
+    preRequisito: "CC132",
     semestre: 5,
     ementa:
-      "Introdução à comunicação de dados, Camada fisica, Camada de enlace, Camada de Rede, Camada de Transporte, Camada de Aplicação, Novas tecnologias e tendências.",
+      "Introdução a Modelagem de sistemas. Linguagem de Modelagem Unificada (UML). Processos de desenvolvimento de software. Modelagem de Requisitos. Modelagem de classes de análise. Modelagem de interação. Projeto de classes de software. Projeto de Arquitetura. Projeto de Banco de dados.",
   },
   {
     id: "CC147",
