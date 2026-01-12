@@ -1,0 +1,32 @@
+"use client";
+
+import { memo } from "react";
+import { Moon, Sun } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+interface ThemeToggleProps {
+  resolvedTheme: "light" | "dark";
+  onToggle: () => void;
+}
+
+/**
+ * Botão de alternância de tema (dark/light)
+ */
+export const ThemeToggle = memo(function ThemeToggle({
+  resolvedTheme,
+  onToggle,
+}: ThemeToggleProps) {
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={onToggle}
+      className="relative"
+      title="Alternar tema"
+    >
+      <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+      <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+      <span className="sr-only">Alternar tema</span>
+    </Button>
+  );
+});

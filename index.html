@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fluxograma de Disciplinas</title>
+  <style>
+    /* ===== VARIÁVEIS E RESET ===== */
+    :root {
+      --primary: #6366f1;
+      --primary-light: #818cf8;
+      --primary-dark: #4f46e5;
+      --bg: #0f172a;
+      --bg-card: #1e293b;
+      --bg-sidebar: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --glow: rgba(99, 102, 241, 0.6);
+      --semester-colors: #ef4444, #f97316, #eab308, #22c55e, #14b8a6, #3b82f6, #8b5cf6, #ec4899;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      padding: 1.5rem 2rem;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    header p {
+      color: rgba(255, 255, 255, 0.8);
+      margin-top: 0.25rem;
+      font-size: 0.9rem;
+    }
+
+    /* ===== CONTAINER PRINCIPAL ===== */
+    .main-container {
+      display: flex;
+      min-height: calc(100vh - 80px);
+    }
+
+    /* ===== ÁREA DO FLUXOGRAMA ===== */
+    .flowchart-area {
+      flex: 1;
+      padding: 2rem;
+      overflow-x: auto;
+      transition: margin-right 0.3s ease;
+    }
+
+    .flowchart-area.sidebar-open {
+      margin-right: 380px;
+    }
+
+    /* ===== CONTAINER DO FLUXOGRAMA ===== */
+    .flowchart-container {
+      position: relative;
+      min-width: max-content;
+    }
+
+    /* ===== SVG PARA CONEXÕES ===== */
+    .connections-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .connection-line {
+      fill: none;
+      stroke: var(--border);
+      stroke-width: 2;
+      transition: all 0.3s ease;
+    }
+
+    .connection-line.highlighted {
+      stroke: var(--primary-light);
+      stroke-width: 3;
+      filter: drop-shadow(0 0 6px var(--glow));
+    }
+
+    .connection-line.dimmed {
+      stroke: var(--border);
+      opacity: 0.2;
+    }
+
+    /* Seta no final da linha */
+    .arrow-marker {
+      fill: var(--border);
+      transition: fill 0.3s ease;
+    }
+
+    .arrow-marker.highlighted {
+      fill: var(--primary-light);
+    }
+
+    /* ===== GRID DE SEMESTRES ===== */
+    .semesters-grid {
+      display: flex;
+      gap: 1.5rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .semester-column {
+      min-width: 180px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .semester-header {
+      text-align: center;
+      padding: 0.75rem 1rem;
+      background: var(--bg-card);
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border-left: 4px solid var(--semester-color);
+      margin-bottom: 0.5rem;
+    }
+
+    /* ===== CARDS DE DISCIPLINAS ===== */
+    .discipline-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      border-top: 3px solid var(--semester-color);
+    }
+
+    .discipline-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .discipline-card.highlighted {
+      border-color: var(--primary-light);
+      box-shadow: 0 0 20px var(--glow), 0 0 40px rgba(99, 102, 241, 0.3);
+      transform: translateY(-4px) scale(1.02);
+      z-index: 10;
+    }
+
+    .discipline-card.dimmed {
+      opacity: 0.3;
+      transform: scale(0.98);
+    }
+
+    .discipline-card.selected {
+      border-color: var(--primary);
+      box-shadow: 0 0 25px var(--glow);
+    }
+
+    .discipline-id {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.25rem;
+    }
+
+    .discipline-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--text);
+    }
+
+    .discipline-prereq {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .discipline-prereq svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 380px;
+      height: 100vh;
+      background: var(--bg-sidebar);
+      border-left: 1px solid var(--border);
+      transition: right 0.3s ease;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -10px 0 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .sidebar.open {
+      right: 0;
+    }
+
+    .sidebar-header {
+      padding: 1.5rem;
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .sidebar-header h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      line-height: 1.3;
+      flex: 1;
+      padding-right: 1rem;
+    }
+
+    .close-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .close-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .sidebar-content {
+      padding: 1.5rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .info-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .info-section h3 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .info-section p, .info-section ul {
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .info-section ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .info-section li {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .info-section li:last-child {
+      border-bottom: none;
+    }
+
+    .prereq-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg);
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid var(--border);
+    }
+
+    .prereq-badge:hover {
+      background: var(--primary-dark);
+      border-color: var(--primary);
+    }
+
+    .semester-badge {
+      display: inline-block;
+      background: var(--primary);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .ementa-text {
+      background: var(--bg);
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+      text-align: justify;
+    }
+
+    /* ===== LEGENDA ===== */
+    .legend {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      z-index: 50;
+      font-size: 0.8rem;
+    }
+
+    .legend h4 {
+      margin-bottom: 0.75rem;
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+
+    /* ===== RESPONSIVIDADE ===== */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        right: -100%;
+      }
+
+      .flowchart-area.sidebar-open {
+        margin-right: 0;
+      }
+
+      .semesters-grid {
+        flex-direction: column;
+        gap: 2rem;
+      }
+
+      .semester-column {
+        min-width: 100%;
+      }
+
+      .legend {
+        display: none;
+      }
+
+      header h1 {
+        font-size: 1.25rem;
+      }
+    }
+
+    /* ===== ANIMAÇÕES ===== */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    .loading {
+      animation: pulse 1.5s infinite;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📚 Fluxograma de Disciplinas</h1>
+    <p>Passe o mouse para ver dependências • Clique para ver a ementa</p>
+  </header>
+
+  <div class="main-container">
+    <div class="flowchart-area" id="flowchartArea">
+      <div class="flowchart-container" id="flowchartContainer">
+        <svg class="connections-svg" id="connectionsSvg">
+          <defs>
+            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+              <polygon class="arrow-marker" points="0 0, 10 3.5, 0 7" />
+            </marker>
+            <marker id="arrowhead-highlighted" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+              <polygon class="arrow-marker highlighted" points="0 0, 10 3.5, 0 7" />
+            </marker>
+          </defs>
+        </svg>
+        <div class="semesters-grid" id="semestersGrid"></div>
+      </div>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h2 id="sidebarTitle">Selecione uma disciplina</h2>
+        <button class="close-btn" id="closeBtn" aria-label="Fechar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="sidebar-content" id="sidebarContent">
+        <p style="color: var(--text-muted)">Clique em uma disciplina para ver seus detalhes.</p>
+      </div>
+    </aside>
+  </div>
+
+  <div class="legend">
+    <h4>Semestres</h4>
+    <div id="legendItems"></div>
+  </div>
+
+  <script>
+    // ============================================================
+    // DADOS DAS DISCIPLINAS
+    // Para adicionar/remover disciplinas, modifique apenas este array
+    // ============================================================
+    const disciplinas = [
+      // SEMESTRE 1
+      {
+        id: "MAT101",
+        nome: "Cálculo I",
+        semestre: 1,
+        preRequisito: null,
+        ementa: "Funções reais de uma variável real: limites, continuidade, derivadas e integrais. Aplicações de derivadas: taxas de variação, máximos e mínimos, regra de L'Hôpital. Técnicas de integração e aplicações: áreas, volumes e comprimento de arco."
+      },
+      {
+        id: "FIS101",
+        nome: "Física I",
+        semestre: 1,
+        preRequisito: null,
+        ementa: "Mecânica Newtoniana: cinemática e dinâmica da partícula. Leis de Newton. Trabalho e energia. Conservação de energia mecânica. Momento linear e sua conservação. Colisões. Cinemática e dinâmica rotacional."
+      },
+      {
+        id: "CC101",
+        nome: "Introdução à Computação",
+        semestre: 1,
+        preRequisito: null,
+        ementa: "História da computação. Conceitos básicos de hardware e software. Sistemas de numeração. Representação de dados. Introdução à lógica de programação. Algoritmos e estruturas de controle básicas."
+      },
+      {
+        id: "ALG101",
+        nome: "Álgebra Linear",
+        semestre: 1,
+        preRequisito: null,
+        ementa: "Matrizes e sistemas lineares. Espaços vetoriais. Transformações lineares. Autovalores e autovetores. Diagonalização de matrizes. Aplicações em computação gráfica e machine learning."
+      },
+
+      // SEMESTRE 2
+      {
+        id: "MAT201",
+        nome: "Cálculo II",
+        semestre: 2,
+        preRequisito: "MAT101",
+        ementa: "Sequências e séries numéricas. Séries de potências e séries de Taylor. Funções de várias variáveis: limites, continuidade, derivadas parciais. Gradiente, derivada direcional. Máximos e mínimos. Integrais múltiplas."
+      },
+      {
+        id: "FIS201",
+        nome: "Física II",
+        semestre: 2,
+        preRequisito: "FIS101",
+        ementa: "Eletrostática: carga elétrica, campo elétrico, potencial elétrico. Capacitância. Corrente elétrica, resistência e circuitos. Campo magnético. Indução eletromagnética. Ondas eletromagnéticas."
+      },
+      {
+        id: "CC201",
+        nome: "Programação I",
+        semestre: 2,
+        preRequisito: "CC101",
+        ementa: "Fundamentos de programação estruturada. Tipos de dados, variáveis e operadores. Estruturas de controle: condicionais e loops. Funções e modularização. Arrays e strings. Manipulação de arquivos. Introdução à recursão."
+      },
+      {
+        id: "MD201",
+        nome: "Matemática Discreta",
+        semestre: 2,
+        preRequisito: "ALG101",
+        ementa: "Lógica proposicional e de predicados. Técnicas de demonstração. Teoria dos conjuntos. Relações e funções. Indução matemática. Teoria dos grafos. Combinatória e contagem."
+      },
+
+      // SEMESTRE 3
+      {
+        id: "MAT301",
+        nome: "Cálculo III",
+        semestre: 3,
+        preRequisito: "MAT201",
+        ementa: "Equações diferenciais ordinárias de primeira e segunda ordem. Sistemas de equações diferenciais. Transformada de Laplace. Séries de Fourier. Aplicações em física e engenharia."
+      },
+      {
+        id: "CC301",
+        nome: "Programação II",
+        semestre: 3,
+        preRequisito: "CC201",
+        ementa: "Programação orientada a objetos: classes, objetos, herança, polimorfismo, encapsulamento. Tratamento de exceções. Coleções e estruturas de dados. Interfaces gráficas. Padrões de projeto básicos."
+      },
+      {
+        id: "ED301",
+        nome: "Estruturas de Dados",
+        semestre: 3,
+        preRequisito: "CC201",
+        ementa: "Análise de algoritmos e complexidade. Listas, pilhas e filas. Árvores binárias e árvores de busca. Heaps e filas de prioridade. Tabelas hash. Grafos: representação e algoritmos básicos."
+      },
+      {
+        id: "AC301",
+        nome: "Arquitetura de Computadores",
+        semestre: 3,
+        preRequisito: "CC101",
+        ementa: "Organização de computadores. Representação de dados. Conjunto de instruções. Unidade de controle e datapath. Hierarquia de memória. Pipeline. Introdução a sistemas paralelos."
+      },
+
+      // SEMESTRE 4
+      {
+        id: "BD401",
+        nome: "Banco de Dados",
+        semestre: 4,
+        preRequisito: "ED301",
+        ementa: "Modelagem de dados: modelo entidade-relacionamento e modelo relacional. Linguagem SQL. Normalização. Transações e controle de concorrência. Indexação e otimização de consultas. Introdução a bancos NoSQL."
+      },
+      {
+        id: "ALG401",
+        nome: "Análise de Algoritmos",
+        semestre: 4,
+        preRequisito: "ED301",
+        ementa: "Técnicas de análise de algoritmos. Notação assintótica. Divisão e conquista. Programação dinâmica. Algoritmos gulosos. Algoritmos em grafos: caminhos mínimos, árvores geradoras. Introdução à complexidade computacional."
+      },
+      {
+        id: "SO401",
+        nome: "Sistemas Operacionais",
+        semestre: 4,
+        preRequisito: "AC301",
+        ementa: "Conceitos de sistemas operacionais. Processos e threads. Escalonamento de CPU. Sincronização e comunicação entre processos. Gerenciamento de memória. Sistemas de arquivos. Entrada e saída."
+      },
+      {
+        id: "PROB401",
+        nome: "Probabilidade e Estatística",
+        semestre: 4,
+        preRequisito: "MAT201",
+        ementa: "Probabilidade: axiomas, probabilidade condicional, independência. Variáveis aleatórias discretas e contínuas. Distribuições de probabilidade. Estatística descritiva. Inferência estatística: estimação e testes de hipóteses."
+      },
+
+      // SEMESTRE 5
+      {
+        id: "RC501",
+        nome: "Redes de Computadores",
+        semestre: 5,
+        preRequisito: "SO401",
+        ementa: "Arquiteturas de redes. Modelo OSI e TCP/IP. Camada física e de enlace. Protocolos de acesso ao meio. Camada de rede: endereçamento IP, roteamento. Camada de transporte: TCP e UDP. Camada de aplicação."
+      },
+      {
+        id: "ES501",
+        nome: "Engenharia de Software",
+        semestre: 5,
+        preRequisito: "CC301",
+        ementa: "Processos de desenvolvimento de software. Engenharia de requisitos. Projeto de software e arquitetura. Testes de software. Manutenção e evolução. Metodologias ágeis. Gestão de projetos de software."
+      },
+      {
+        id: "IA501",
+        nome: "Inteligência Artificial",
+        semestre: 5,
+        preRequisito: "ALG401",
+        ementa: "Introdução à IA. Agentes inteligentes. Busca em espaço de estados. Jogos e busca adversarial. Representação de conhecimento. Sistemas especialistas. Introdução ao aprendizado de máquina."
+      },
+      {
+        id: "CG501",
+        nome: "Computação Gráfica",
+        semestre: 5,
+        preRequisito: "ALG101",
+        ementa: "Fundamentos de computação gráfica. Transformações geométricas 2D e 3D. Pipeline gráfico. Modelagem de objetos. Iluminação e sombreamento. Texturas. Introdução ao OpenGL/WebGL."
+      },
+
+      // SEMESTRE 6
+      {
+        id: "SEG601",
+        nome: "Segurança da Informação",
+        semestre: 6,
+        preRequisito: "RC501",
+        ementa: "Conceitos de segurança da informação. Criptografia simétrica e assimétrica. Funções hash e assinaturas digitais. Autenticação e controle de acesso. Segurança em redes. Vulnerabilidades e ataques. Políticas de segurança."
+      },
+      {
+        id: "SD601",
+        nome: "Sistemas Distribuídos",
+        semestre: 6,
+        preRequisito: "RC501",
+        ementa: "Conceitos de sistemas distribuídos. Comunicação entre processos. Sincronização e coordenação. Replicação e consistência. Tolerância a falhas. Sistemas peer-to-peer. Computação em nuvem."
+      },
+      {
+        id: "ML601",
+        nome: "Aprendizado de Máquina",
+        semestre: 6,
+        preRequisito: "IA501",
+        ementa: "Aprendizado supervisionado: regressão e classificação. Árvores de decisão e random forests. Máquinas de vetores de suporte. Redes neurais. Aprendizado não supervisionado: clustering. Redução de dimensionalidade. Validação de modelos."
+      },
+      {
+        id: "COMP601",
+        nome: "Compiladores",
+        semestre: 6,
+        preRequisito: "ALG401",
+        ementa: "Estrutura de um compilador. Análise léxica e autômatos finitos. Análise sintática: gramáticas e parsers. Análise semântica e tabela de símbolos. Geração de código intermediário. Otimização de código. Geração de código objeto."
+      }
+    ];
+
+    // ============================================================
+    // CONFIGURAÇÃO DE CORES POR SEMESTRE
+    // ============================================================
+    const semesterColors = [
+      '#ef4444', // Vermelho
+      '#f97316', // Laranja
+      '#eab308', // Amarelo
+      '#22c55e', // Verde
+      '#14b8a6', // Teal
+      '#3b82f6', // Azul
+      '#8b5cf6', // Roxo
+      '#ec4899'  // Rosa
+    ];
+
+    // ============================================================
+    // VARIÁVEIS GLOBAIS
+    // ============================================================
+    let selectedDiscipline = null;
+    let disciplineElements = {};
+    let connectionLines = [];
+
+    // ============================================================
+    // FUNÇÕES AUXILIARES
+    // ============================================================
+
+    /**
+     * Obtém a cor associada a um semestre
+     */
+    function getSemesterColor(semestre) {
+      return semesterColors[(semestre - 1) % semesterColors.length];
+    }
+
+    /**
+     * Encontra uma disciplina pelo ID
+     */
+    function findDisciplineById(id) {
+      return disciplinas.find(d => d.id === id);
+    }
+
+    /**
+     * Obtém todos os pré-requisitos de uma disciplina (recursivamente)
+     */
+    function getAllPrerequisites(disciplineId, visited = new Set()) {
+      if (visited.has(disciplineId)) return [];
+      visited.add(disciplineId);
+      
+      const discipline = findDisciplineById(disciplineId);
+      if (!discipline || !discipline.preRequisito) return [];
+      
+      const prereqs = [discipline.preRequisito];
+      const deepPrereqs = getAllPrerequisites(discipline.preRequisito, visited);
+      
+      return [...prereqs, ...deepPrereqs];
+    }
+
+    /**
+     * Obtém todas as disciplinas que dependem de uma disciplina
+     */
+    function getDependents(disciplineId) {
+      return disciplinas.filter(d => d.preRequisito === disciplineId).map(d => d.id);
+    }
+
+    /**
+     * Obtém o fluxo completo (pré-requisitos + dependentes recursivos)
+     */
+    function getFullFlow(disciplineId) {
+      const flow = new Set([disciplineId]);
+      
+      // Adiciona pré-requisitos
+      getAllPrerequisites(disciplineId).forEach(id => flow.add(id));
+      
+      // Adiciona dependentes recursivamente
+      function addDependents(id) {
+        getDependents(id).forEach(depId => {
+          if (!flow.has(depId)) {
+            flow.add(depId);
+            addDependents(depId);
+          }
+        });
+      }
+      addDependents(disciplineId);
+      
+      return flow;
+    }
+
+    // ============================================================
+    // RENDERIZAÇÃO DO FLUXOGRAMA
+    // ============================================================
+
+    /**
+     * Renderiza o grid de semestres com as disciplinas
+     */
+    function renderFlowchart() {
+      const grid = document.getElementById('semestersGrid');
+      grid.innerHTML = '';
+      disciplineElements = {};
+      
+      // Agrupa disciplinas por semestre
+      const bySemester = {};
+      disciplinas.forEach(d => {
+        if (!bySemester[d.semestre]) bySemester[d.semestre] = [];
+        bySemester[d.semestre].push(d);
+      });
+      
+      // Cria colunas para cada semestre
+      const semesters = Object.keys(bySemester).sort((a, b) => a - b);
+      
+      semesters.forEach(sem => {
+        const column = document.createElement('div');
+        column.className = 'semester-column';
+        column.style.setProperty('--semester-color', getSemesterColor(parseInt(sem)));
+        
+        // Header do semestre
+        const header = document.createElement('div');
+        header.className = 'semester-header';
+        header.style.setProperty('--semester-color', getSemesterColor(parseInt(sem)));
+        header.textContent = `${sem}º Semestre`;
+        column.appendChild(header);
+        
+        // Cards das disciplinas
+        bySemester[sem].forEach(discipline => {
+          const card = createDisciplineCard(discipline);
+          disciplineElements[discipline.id] = card;
+          column.appendChild(card);
+        });
+        
+        grid.appendChild(column);
+      });
+      
+      // Renderiza legenda
+      renderLegend(semesters);
+      
+      // Aguarda o DOM atualizar e desenha as conexões
+      requestAnimationFrame(() => {
+        setTimeout(drawConnections, 100);
+      });
+    }
+
+    /**
+     * Cria o card de uma disciplina
+     */
+    function createDisciplineCard(discipline) {
+      const card = document.createElement('div');
+      card.className = 'discipline-card';
+      card.dataset.id = discipline.id;
+      card.style.setProperty('--semester-color', getSemesterColor(discipline.semestre));
+      
+      const prereqText = discipline.preRequisito 
+        ? `<div class="discipline-prereq">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 19V5M5 12l7-7 7 7"/>
+            </svg>
+            Req: ${discipline.preRequisito}
+           </div>` 
+        : '';
+      
+      card.innerHTML = `
+        <div class="discipline-id">${discipline.id}</div>
+        <div class="discipline-name">${discipline.nome}</div>
+        ${prereqText}
+      `;
+      
+      // Event listeners
+      card.addEventListener('mouseenter', () => handleHover(discipline.id));
+      card.addEventListener('mouseleave', handleHoverEnd);
+      card.addEventListener('click', () => handleClick(discipline));
+      
+      return card;
+    }
+
+    /**
+     * Renderiza a legenda de cores
+     */
+    function renderLegend(semesters) {
+      const legendItems = document.getElementById('legendItems');
+      legendItems.innerHTML = '';
+      
+      semesters.forEach(sem => {
+        const item = document.createElement('div');
+        item.className = 'legend-item';
+        item.innerHTML = `
+          <div class="legend-color" style="background: ${getSemesterColor(parseInt(sem))}"></div>
+          <span>${sem}º Sem</span>
+        `;
+        legendItems.appendChild(item);
+      });
+    }
+
+    // ============================================================
+    // DESENHO DAS CONEXÕES (SETAS)
+    // ============================================================
+
+    /**
+     * Desenha todas as linhas de conexão entre disciplinas
+     */
+    function drawConnections() {
+      const svg = document.getElementById('connectionsSvg');
+      const container = document.getElementById('flowchartContainer');
+      
+      // Limpa conexões anteriores (mantém defs)
+      const defs = svg.querySelector('defs');
+      svg.innerHTML = '';
+      svg.appendChild(defs);
+      
+      // Ajusta tamanho do SVG
+      const rect = container.getBoundingClientRect();
+      svg.style.width = container.scrollWidth + 'px';
+      svg.style.height = container.scrollHeight + 'px';
+      
+      connectionLines = [];
+      
+      // Desenha conexões para cada disciplina com pré-requisito
+      disciplinas.forEach(discipline => {
+        if (discipline.preRequisito) {
+          const fromElement = disciplineElements[discipline.preRequisito];
+          const toElement = disciplineElements[discipline.id];
+          
+          if (fromElement && toElement) {
+            const line = createConnectionLine(fromElement, toElement, discipline.preRequisito, discipline.id);
+            connectionLines.push(line);
+            svg.appendChild(line);
+          }
+        }
+      });
+    }
+
+    /**
+     * Cria uma linha de conexão entre dois elementos
+     */
+    function createConnectionLine(fromEl, toEl, fromId, toId) {
+      const container = document.getElementById('flowchartContainer');
+      const containerRect = container.getBoundingClientRect();
+      
+      const fromRect = fromEl.getBoundingClientRect();
+      const toRect = toEl.getBoundingClientRect();
+      
+      // Calcula pontos relativos ao container
+      const startX = fromRect.right - containerRect.left;
+      const startY = fromRect.top + fromRect.height / 2 - containerRect.top;
+      const endX = toRect.left - containerRect.left;
+      const endY = toRect.top + toRect.height / 2 - containerRect.top;
+      
+      // Cria curva bezier
+      const midX = (startX + endX) / 2;
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', `M ${startX} ${startY} C ${midX} ${startY}, ${midX} ${endY}, ${endX} ${endY}`);
+      path.setAttribute('class', 'connection-line');
+      path.setAttribute('marker-end', 'url(#arrowhead)');
+      path.dataset.from = fromId;
+      path.dataset.to = toId;
+      
+      return path;
+    }
+
+    // ============================================================
+    // INTERATIVIDADE - HOVER
+    // ============================================================
+
+    /**
+     * Manipula o evento de hover sobre uma disciplina
+     */
+    function handleHover(disciplineId) {
+      const flow = getFullFlow(disciplineId);
+      
+      // Destaca/ofusca cards
+      Object.entries(disciplineElements).forEach(([id, element]) => {
+        if (flow.has(id)) {
+          element.classList.add('highlighted');
+          element.classList.remove('dimmed');
+        } else {
+          element.classList.remove('highlighted');
+          element.classList.add('dimmed');
+        }
+      });
+      
+      // Destaca/ofusca conexões
+      connectionLines.forEach(line => {
+        const from = line.dataset.from;
+        const to = line.dataset.to;
+        
+        if (flow.has(from) && flow.has(to)) {
+          line.classList.add('highlighted');
+          line.classList.remove('dimmed');
+          line.setAttribute('marker-end', 'url(#arrowhead-highlighted)');
+        } else {
+          line.classList.remove('highlighted');
+          line.classList.add('dimmed');
+          line.setAttribute('marker-end', 'url(#arrowhead)');
+        }
+      });
+    }
+
+    /**
+     * Manipula o fim do hover
+     */
+    function handleHoverEnd() {
+      // Remove todas as classes de destaque/ofuscação
+      Object.values(disciplineElements).forEach(element => {
+        element.classList.remove('highlighted', 'dimmed');
+      });
+      
+      connectionLines.forEach(line => {
+        line.classList.remove('highlighted', 'dimmed');
+        line.setAttribute('marker-end', 'url(#arrowhead)');
+      });
+    }
+
+    // ============================================================
+    // INTERATIVIDADE - CLICK E SIDEBAR
+    // ============================================================
+
+    /**
+     * Manipula o clique em uma disciplina
+     */
+    function handleClick(discipline) {
+      // Atualiza seleção visual
+      if (selectedDiscipline) {
+        disciplineElements[selectedDiscipline.id]?.classList.remove('selected');
+      }
+      selectedDiscipline = discipline;
+      disciplineElements[discipline.id]?.classList.add('selected');
+      
+      // Atualiza sidebar
+      updateSidebar(discipline);
+      openSidebar();
+    }
+
+    /**
+     * Atualiza o conteúdo da sidebar
+     */
+    function updateSidebar(discipline) {
+      const title = document.getElementById('sidebarTitle');
+      const content = document.getElementById('sidebarContent');
+      
+      title.textContent = discipline.nome;
+      
+      // Busca informações do pré-requisito
+      let prereqHtml = '<span style="color: var(--text-muted)">Nenhum</span>';
+      if (discipline.preRequisito) {
+        const prereq = findDisciplineById(discipline.preRequisito);
+        if (prereq) {
+          prereqHtml = `
+            <div class="prereq-badge" onclick="navigateToDiscipline('${prereq.id}')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 19V5M5 12l7-7 7 7"/>
+              </svg>
+              ${prereq.id} - ${prereq.nome}
+            </div>
+          `;
+        }
+      }
+      
+      // Busca disciplinas que dependem desta
+      const dependents = getDependents(discipline.id);
+      let dependentsHtml = '<span style="color: var(--text-muted)">Nenhuma</span>';
+      if (dependents.length > 0) {
+        dependentsHtml = dependents.map(depId => {
+          const dep = findDisciplineById(depId);
+          return `
+            <div class="prereq-badge" onclick="navigateToDiscipline('${dep.id}')" style="margin-bottom: 0.5rem;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12l7 7 7-7"/>
+              </svg>
+              ${dep.id} - ${dep.nome}
+            </div>
+          `;
+        }).join('');
+      }
+      
+      content.innerHTML = `
+        <div class="info-section">
+          <h3>Código</h3>
+          <p><strong>${discipline.id}</strong></p>
+        </div>
+        
+        <div class="info-section">
+          <h3>Semestre</h3>
+          <p><span class="semester-badge" style="background: ${getSemesterColor(discipline.semestre)}">${discipline.semestre}º Semestre</span></p>
+        </div>
+        
+        <div class="info-section">
+          <h3>Pré-requisito</h3>
+          ${prereqHtml}
+        </div>
+        
+        <div class="info-section">
+          <h3>Libera para</h3>
+          ${dependentsHtml}
+        </div>
+        
+        <div class="info-section">
+          <h3>Ementa</h3>
+          <div class="ementa-text">${discipline.ementa}</div>
+        </div>
+      `;
+    }
+
+    /**
+     * Navega para uma disciplina específica
+     */
+    function navigateToDiscipline(id) {
+      const discipline = findDisciplineById(id);
+      if (discipline) {
+        handleClick(discipline);
+        
+        // Scroll até o card
+        const element = disciplineElements[id];
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+        }
+      }
+    }
+
+    /**
+     * Abre a sidebar
+     */
+    function openSidebar() {
+      document.getElementById('sidebar').classList.add('open');
+      document.getElementById('flowchartArea').classList.add('sidebar-open');
+    }
+
+    /**
+     * Fecha a sidebar
+     */
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('flowchartArea').classList.remove('sidebar-open');
+      
+      if (selectedDiscipline) {
+        disciplineElements[selectedDiscipline.id]?.classList.remove('selected');
+        selectedDiscipline = null;
+      }
+    }
+
+    // ============================================================
+    // INICIALIZAÇÃO
+    // ============================================================
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Renderiza o fluxograma
+      renderFlowchart();
+      
+      // Event listener para fechar sidebar
+      document.getElementById('closeBtn').addEventListener('click', closeSidebar);
+      
+      // Redesenha conexões ao redimensionar
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(drawConnections, 100);
+      });
+    });
+
+    // Torna a função de navegação global para uso no onclick inline
+    window.navigateToDiscipline = navigateToDiscipline;
+  </script>
+</body>
+</html>
