@@ -1,20 +1,26 @@
 "use client";
 
+import { useMemo } from "react";
 import { Flowchart } from "@/components/flowchart/flowchart";
 import { Legend } from "@/components/flowchart/legend";
-import { ProgressBar } from "@/components/flowchart/progress-bar";
+import { CreditsSummary } from "@/components/flowchart/credits-summary";
 import { ThemeToggle } from "@/components/flowchart/theme-toggle";
 import { useProgress } from "@/hooks/use-progress";
 import { useTheme } from "@/hooks/use-theme";
+import { calcularResumoCreditos } from "@/lib/creditos";
 
 export default function Home() {
   const {
-    stats,
     isLoaded: progressLoaded,
-    isConcluida,
+    concluidas,
     toggleConcluida,
   } = useProgress();
   const { resolvedTheme, toggleTheme, isLoaded: themeLoaded } = useTheme();
+
+  const resumoCreditos = useMemo(
+    () => calcularResumoCreditos(concluidas),
+    [concluidas]
+  );
 
   return (
     <main className="min-h-screen bg-background">
@@ -37,13 +43,7 @@ export default function Home() {
       </header>
 
       <section className="container mx-auto px-4 py-4">
-        {progressLoaded && (
-          <ProgressBar
-            completadas={stats.completadas}
-            total={stats.total}
-            percentual={stats.percentual}
-          />
-        )}
+        {progressLoaded && <CreditsSummary resumo={resumoCreditos} />}
       </section>
 
       {/* Legenda */}
@@ -54,8 +54,9 @@ export default function Home() {
       {/* Fluxograma */}
       <section className="container mx-auto px-4">
         <Flowchart
-          isConcluida={isConcluida}
+          concluidas={concluidas}
           toggleConcluida={toggleConcluida}
+          colorMode={resolvedTheme}
         />
       </section>
 
