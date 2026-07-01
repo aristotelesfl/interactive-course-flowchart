@@ -6,7 +6,10 @@ export interface Disciplina {
   id: string;
   nome: string;
   semestre: number;
-  preRequisito: string | null;
+  /** IDs das disciplinas que são pré-requisito desta. Vazio se não houver. */
+  preRequisitos: string[];
+  /** Quantidade de créditos da disciplina. */
+  creditos: number;
   ementa: string;
 }
 

@@ -19,12 +19,11 @@ export function useFlowchart() {
     const resultado = new Set<string>();
     const disciplina = getDisciplinaById(id);
 
-    if (disciplina?.preRequisito) {
-      resultado.add(disciplina.preRequisito);
-      encontrarPreRequisitos(disciplina.preRequisito).forEach((pr) =>
-        resultado.add(pr)
-      );
-    }
+    disciplina?.preRequisitos.forEach((preReqId) => {
+      if (resultado.has(preReqId)) return;
+      resultado.add(preReqId);
+      encontrarPreRequisitos(preReqId).forEach((pr) => resultado.add(pr));
+    });
 
     return resultado;
   }, []);
@@ -36,7 +35,7 @@ export function useFlowchart() {
     const resultado = new Set<string>();
 
     disciplinas.forEach((d) => {
-      if (d.preRequisito === id) {
+      if (d.preRequisitos.includes(id) && !resultado.has(d.id)) {
         resultado.add(d.id);
         encontrarDependentes(d.id).forEach((dep) => resultado.add(dep));
       }

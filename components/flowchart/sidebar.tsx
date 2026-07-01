@@ -3,6 +3,7 @@
 import { memo } from "react";
 import { X, BookOpen, GitBranch, ArrowRight, CheckCircle2 } from "lucide-react";
 import type { Disciplina } from "@/lib/types";
+import { getSemestreLabel } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -59,7 +60,8 @@ export const Sidebar = memo(function Sidebar({
               {disciplina.nome}
             </h2>
             <p className="text-sm text-muted-foreground mt-1">
-              {disciplina.semestre}º Semestre
+              {getSemestreLabel(disciplina.semestre)} ·{" "}
+              {disciplina.creditos} créditos
             </p>
           </div>
           <Button
