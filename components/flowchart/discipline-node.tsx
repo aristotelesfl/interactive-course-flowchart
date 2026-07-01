@@ -3,35 +3,35 @@
 import type React from "react";
 
 import { memo } from "react";
+import { Handle, Position, type Node, type NodeProps } from "@xyflow/react";
 import { Check } from "lucide-react";
 import type { Disciplina } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-interface DisciplineCardProps {
+/**
+ * Dados carregados por cada nó de disciplina no React Flow.
+ */
+export type DisciplinaNodeData = {
   disciplina: Disciplina;
   isHighlighted: boolean;
   isDimmed: boolean;
   isConcluida: boolean;
-  onClick: (disciplina: Disciplina) => void;
-  onMouseEnter: (id: string) => void;
-  onMouseLeave: () => void;
   onToggleConcluida: (id: string) => void;
-}
+};
+
+export type DisciplinaNode = Node<DisciplinaNodeData, "disciplina">;
 
 /**
- * Card individual de uma disciplina no fluxograma
- * Usa memo para evitar re-renders desnecessários
+ * Nó customizado que renderiza o card de uma disciplina.
+ * As arestas se ancoram aos Handles (esquerda = entrada, direita = saída),
+ * então nunca descolam em scroll/zoom/resize — o React Flow cuida disso.
  */
-export const DisciplineCard = memo(function DisciplineCard({
-  disciplina,
-  isHighlighted,
-  isDimmed,
-  isConcluida,
-  onClick,
-  onMouseEnter,
-  onMouseLeave,
-  onToggleConcluida,
-}: DisciplineCardProps) {
+export const DisciplineNode = memo(function DisciplineNode({
+  data,
+}: NodeProps<DisciplinaNode>) {
+  const { disciplina, isHighlighted, isDimmed, isConcluida, onToggleConcluida } =
+    data;
+
   const handleToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
     onToggleConcluida(disciplina.id);
@@ -39,26 +39,36 @@ export const DisciplineCard = memo(function DisciplineCard({
 
   return (
     <div
-      data-id={disciplina.id}
       className={cn(
         "relative px-3 py-2 rounded-lg cursor-pointer transition-all duration-300",
         "bg-card border-2 border-border hover:border-primary",
-        "min-w-[140px] text-center",
+        "w-[180px] text-center",
         isConcluida &&
           "border-emerald-500 bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.3)]",
         isHighlighted &&
           !isConcluida &&
-          "border-primary shadow-[0_0_20px_rgba(59,130,246,0.5)] scale-105 z-10",
+          "border-primary shadow-[0_0_20px_rgba(59,130,246,0.5)]",
         isHighlighted &&
           isConcluida &&
-          "border-emerald-400 shadow-[0_0_25px_rgba(16,185,129,0.5)] scale-105 z-10",
+          "border-emerald-400 shadow-[0_0_25px_rgba(16,185,129,0.5)]",
         isDimmed && "opacity-30"
       )}
-      onClick={() => onClick(disciplina)}
-      onMouseEnter={() => onMouseEnter(disciplina.id)}
-      onMouseLeave={onMouseLeave}
     >
-      {/* Código da disciplina */}
+      {/* Handles de conexão (invisíveis, apenas ancoram as arestas) */}
+      <Handle
+        type="target"
+        position={Position.Left}
+        isConnectable={false}
+        className="!h-1.5 !w-1.5 !min-w-0 !border-0 !bg-transparent"
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        isConnectable={false}
+        className="!h-1.5 !w-1.5 !min-w-0 !border-0 !bg-transparent"
+      />
+
+      {/* Código e créditos */}
       <span
         className={cn(
           "text-[10px] font-mono",
@@ -67,7 +77,7 @@ export const DisciplineCard = memo(function DisciplineCard({
             : "text-muted-foreground"
         )}
       >
-        {disciplina.id}
+        {disciplina.id} · {disciplina.creditos} cr
       </span>
 
       {/* Nome da disciplina */}
@@ -83,17 +93,18 @@ export const DisciplineCard = memo(function DisciplineCard({
       </h3>
 
       {/* Indicador de pré-requisito */}
-      {disciplina.preRequisito && !isConcluida && (
+      {disciplina.preRequisitos.length > 0 && !isConcluida && (
         <span
           className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-amber-500 rounded-full"
           title="Tem pré-requisito"
         />
       )}
 
+      {/* Toggle de concluída (nodrag evita conflito com o pan/drag do canvas) */}
       <button
         onClick={handleToggle}
         className={cn(
-          "absolute -top-2 -left-2 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all",
+          "nodrag absolute -top-2 -left-2 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all",
           isConcluida
             ? "bg-emerald-500 border-emerald-500 text-white"
             : "bg-background border-muted-foreground/30 hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950"
