@@ -1,5 +1,12 @@
-import { getApp, getApps, initializeApp } from "firebase/app";
+import { getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import { getFirestore, type Firestore } from "firebase/firestore";
+
+declare global {
+  interface Window {
+    FIREBASE_APPCHECK_DEBUG_TOKEN?: boolean | string;
+  }
+}
 
 /**
  * Config do app web do Firebase, vinda de variáveis de ambiente
@@ -9,7 +16,7 @@ import { getFirestore, type Firestore } from "firebase/firestore";
  * estático, o Next.js os inlina no bundle do cliente no build e eles
  * ficam visíveis no navegador de qualquer forma. Mantê-los em env
  * apenas os tira do controle de versão — a segurança de verdade vem
- * das security rules do Firestore (firestore.rules).
+ * das security rules do Firestore (firestore.rules) e do App Check.
  *
  * Os nomes precisam ser referenciados literalmente (não por acesso
  * dinâmico tipo process.env[chave]) para o Next.js conseguir inliná-los.
@@ -33,7 +40,51 @@ export const firebaseConfigurado = Boolean(
     firebaseConfig.appId
 );
 
+// Site key pública do reCAPTCHA v3 (não é secreta — é feita pra ir no
+// cliente). O App Check é quem garante que só o app de verdade consegue
+// gerar um token válido com ela.
+const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+
+let appCheckInicializado = false;
+
+function getFirebaseApp(): FirebaseApp {
+  return getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+}
+
+/**
+ * Inicializa o Firebase App Check: impede que chamadas ao Firestore
+ * feitas fora do app de verdade (scripts batendo direto na API REST,
+ * como fizemos em testes) sejam aceitas — as security rules sozinhas só
+ * validam o formato dos dados, não se a chamada veio do navegador
+ * rodando este app.
+ *
+ * Chame uma única vez, o quanto antes (ver components/query-provider.tsx).
+ * Sem NEXT_PUBLIC_RECAPTCHA_SITE_KEY configurada, é um no-op — o app
+ * segue funcionando normalmente, só sem essa camada extra de proteção.
+ */
+export function inicializarAppCheck(): void {
+  if (
+    appCheckInicializado ||
+    typeof window === "undefined" ||
+    !recaptchaSiteKey
+  ) {
+    return;
+  }
+  appCheckInicializado = true;
+
+  // reCAPTCHA v3 não valida em localhost: gera um token de depuração
+  // fixo por navegador, que precisa ser cadastrado em Firebase Console
+  // > App Check > Apps > gerenciar tokens de depuração.
+  if (process.env.NODE_ENV !== "production") {
+    window.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+  }
+
+  initializeAppCheck(getFirebaseApp(), {
+    provider: new ReCaptchaV3Provider(recaptchaSiteKey),
+    isTokenAutoRefreshEnabled: true,
+  });
+}
+
 export function getDb(): Firestore {
-  const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-  return getFirestore(app);
+  return getFirestore(getFirebaseApp());
 }

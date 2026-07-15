@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { inicializarAppCheck } from "@/lib/firebase";
 
 /**
  * Provider do TanStack Query para toda a aplicação.
@@ -21,6 +22,12 @@ export function QueryProvider({ children }: { children: ReactNode }) {
         },
       })
   );
+
+  // O quanto antes, antes de qualquer chamada ao Firestore acontecer
+  // nos componentes filhos.
+  useEffect(() => {
+    inicializarAppCheck();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
