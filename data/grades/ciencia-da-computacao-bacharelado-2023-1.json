@@ -1,0 +1,479 @@
+{
+  "id": "ciencia-da-computacao-bacharelado-2023-1",
+  "curso": "CIÊNCIA DA COMPUTAÇÃO - BACHARELADO",
+  "nivel": "GRADUAÇÃO - PRESENCIAL",
+  "turno": "DIURNO",
+  "fluxo": "2023.1",
+  "disciplinas": [
+    {
+      "id": "CC117",
+      "nome": "CALCULO DIFERENCIAL E INTEGRALI",
+      "semestre": 1,
+      "preRequisitos": [],
+      "creditos": 4
+    },
+    {
+      "id": "CC118",
+      "nome": "GEOMETRIA ANALITICA",
+      "semestre": 1,
+      "preRequisitos": [],
+      "creditos": 4
+    },
+    {
+      "id": "CC116",
+      "nome": "MATEMATICA DISCRETA",
+      "semestre": 1,
+      "preRequisitos": [],
+      "creditos": 4
+    },
+    {
+      "id": "CC119",
+      "nome": "ORGANIZACAO DE COMPUTADORES",
+      "semestre": 1,
+      "preRequisitos": [],
+      "creditos": 4
+    },
+    {
+      "id": "CC115",
+      "nome": "PROGRAMACAO E ALGORITMOS",
+      "semestre": 1,
+      "preRequisitos": [],
+      "creditos": 4
+    },
+    {
+      "id": "CC122",
+      "nome": "CALCULO DIFERENCIAL E INTEGRAL II",
+      "semestre": 2,
+      "preRequisitos": [
+        "CC117"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC123",
+      "nome": "ALGEBRA LINEAR PARA COMPUTACAO",
+      "semestre": 2,
+      "preRequisitos": [
+        "CC118"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC125",
+      "nome": "LOGICA PARA COMPUTACAO",
+      "semestre": 2,
+      "preRequisitos": [
+        "CC116"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC121",
+      "nome": "ARQUITETURA DE COMPUTADORES",
+      "semestre": 2,
+      "preRequisitos": [
+        "CC119"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC120",
+      "nome": "PROGRAMACAO ORIENTADA A OBJETO",
+      "semestre": 2,
+      "preRequisitos": [
+        "CC115"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC124",
+      "nome": "FISICA PARA COMPUTACAO",
+      "semestre": 2,
+      "preRequisitos": [
+        "CC117"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC130",
+      "nome": "PROBABILIDADE E ESTATISTICA",
+      "semestre": 3,
+      "preRequisitos": [
+        "CC122"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC129",
+      "nome": "COMPUTACAO GRAFICA",
+      "semestre": 3,
+      "preRequisitos": [
+        "CC123"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC131",
+      "nome": "TEORIA DOS AUTOMATOS E LING. FORMAIS",
+      "semestre": 3,
+      "preRequisitos": [
+        "CC125"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC127",
+      "nome": "SISTEMAS OPERACIONAIS",
+      "semestre": 3,
+      "preRequisitos": [
+        "CC121"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC126",
+      "nome": "ESTRUTURA DE DADOS",
+      "semestre": 3,
+      "preRequisitos": [
+        "CC120"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC128",
+      "nome": "CALCULO DIFERENC. E INTEGRAL III",
+      "semestre": 3,
+      "preRequisitos": [
+        "CC122"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC134",
+      "nome": "AVALIACAO DE DESEMPENHO",
+      "semestre": 4,
+      "preRequisitos": [
+        "CC130"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC137",
+      "nome": "BANCO DE DADOS",
+      "semestre": 4,
+      "preRequisitos": [
+        "CC120"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC136",
+      "nome": "TEORIA DA COMPUTABILIDADE",
+      "semestre": 4,
+      "preRequisitos": [
+        "CC131"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC132",
+      "nome": "ENGENHARIA DE SOFTWARE",
+      "semestre": 4,
+      "preRequisitos": [
+        "CC120"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC133",
+      "nome": "TEORIA DOS GRAFOS",
+      "semestre": 4,
+      "preRequisitos": [
+        "CC126"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC135",
+      "nome": "CALCULO NUMERICO",
+      "semestre": 4,
+      "preRequisitos": [
+        "CC128"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC139",
+      "nome": "REDES DE COMPUTADORES",
+      "semestre": 5,
+      "preRequisitos": [
+        "CC134"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC154",
+      "nome": "EXTENSAO Ι",
+      "semestre": 5,
+      "preRequisitos": [],
+      "creditos": 4
+    },
+    {
+      "id": "CC140",
+      "nome": "INTELIGENCIAL COMPUTACIONAL",
+      "semestre": 5,
+      "preRequisitos": [
+        "CC131"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC138",
+      "nome": "PROGRAMACAO CONCORRENTE E PARALELA",
+      "semestre": 5,
+      "preRequisitos": [
+        "CC127"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC142",
+      "nome": "PROJETO E ANALISE DE ALGORITMOS",
+      "semestre": 5,
+      "preRequisitos": [
+        "CC133"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC141",
+      "nome": "ANALISE E PROJETO DE SOFTWARE",
+      "semestre": 5,
+      "preRequisitos": [
+        "CC132"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC146",
+      "nome": "SISTEMAS DISTRIBUIDOS",
+      "semestre": 6,
+      "preRequisitos": [
+        "CC139"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC144",
+      "nome": "PROCESSAMENTO DE IMAGENS",
+      "semestre": 6,
+      "preRequisitos": [
+        "CC123"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC147",
+      "nome": "COMPILADORES",
+      "semestre": 6,
+      "preRequisitos": [
+        "CC136"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC145",
+      "nome": "INTERACAO HUMANO COMPUTADOR",
+      "semestre": 6,
+      "preRequisitos": [
+        "CC132"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC155",
+      "nome": "EXTENSAO II",
+      "semestre": 6,
+      "preRequisitos": [],
+      "creditos": 4
+    },
+    {
+      "id": "CC143",
+      "nome": "PROGRAMACAO MATEMATICA",
+      "semestre": 6,
+      "preRequisitos": [
+        "CC135"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC150",
+      "nome": "ADMINISTRACAO E EMPREEND. P/COMPUTACAO",
+      "semestre": 7,
+      "preRequisitos": [],
+      "creditos": 4
+    },
+    {
+      "id": "CC152",
+      "nome": "ESTAGIO",
+      "semestre": 7,
+      "preRequisitos": [],
+      "creditos": 6
+    },
+    {
+      "id": "CC149",
+      "nome": "CIENCIA DE DADOS",
+      "semestre": 7,
+      "preRequisitos": [
+        "CC140"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC148",
+      "nome": "INFORMATICA NA SOCIEDADE E ETICA",
+      "semestre": 7,
+      "preRequisitos": [],
+      "creditos": 4
+    },
+    {
+      "id": "CC151",
+      "nome": "PESQUISA EM COMPUTACAO",
+      "semestre": 7,
+      "preRequisitos": [
+        "CC142"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC156",
+      "nome": "EXTENSAO III",
+      "semestre": 8,
+      "preRequisitos": [],
+      "creditos": 4
+    },
+    {
+      "id": "CC157",
+      "nome": "EXTENSAO IV",
+      "semestre": 8,
+      "preRequisitos": [],
+      "creditos": 4
+    },
+    {
+      "id": "CC160",
+      "nome": "EXTENSAO V",
+      "semestre": 8,
+      "preRequisitos": [],
+      "creditos": 4
+    },
+    {
+      "id": "CC153",
+      "nome": "PROJETO FINAL",
+      "semestre": 8,
+      "preRequisitos": [
+        "CC151"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CL179",
+      "nome": "ATIVIDADES ACADEMICAS CIENT. E CULTURAIS",
+      "semestre": 99,
+      "preRequisitos": [],
+      "creditos": 4
+    },
+    {
+      "id": "AEE",
+      "nome": "ATIVIDADE ESPECIFICA DE EXTENSAO",
+      "semestre": 99,
+      "preRequisitos": [],
+      "creditos": 4
+    },
+    {
+      "id": "CC159",
+      "nome": "GERENCIA DE PROJETOS",
+      "semestre": 99,
+      "preRequisitos": [
+        "CC141"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CT983",
+      "nome": "PADROES DE SOFTWARE",
+      "semestre": 99,
+      "preRequisitos": [
+        "CC120"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CT976",
+      "nome": "PROGRAMAÇÃO INTEIRA E COMBINATORIA",
+      "semestre": 99,
+      "preRequisitos": [],
+      "creditos": 4
+    },
+    {
+      "id": "CC083",
+      "nome": "QUALIDADE DE SOFTWARE",
+      "semestre": 99,
+      "preRequisitos": [],
+      "creditos": 4
+    },
+    {
+      "id": "CC109",
+      "nome": "REDES NEURAIS ARTIFICIAIS",
+      "semestre": 99,
+      "preRequisitos": [
+        "CC140"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC158",
+      "nome": "SEGURANCA EM REDES",
+      "semestre": 99,
+      "preRequisitos": [
+        "CC139"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC202",
+      "nome": "TOPIC. ESPECIAIS INTELIG. COMPUTACIONA",
+      "semestre": 99,
+      "preRequisitos": [
+        "CC140"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC200",
+      "nome": "TOPICOS ESPECIAIS EM PROG. MATAMATICA",
+      "semestre": 99,
+      "preRequisitos": [
+        "CC143"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC201",
+      "nome": "TOPICOS ESPECIAIS EM PROGRAMACAO",
+      "semestre": 99,
+      "preRequisitos": [
+        "CC132"
+      ],
+      "creditos": 4
+    },
+    {
+      "id": "CC111",
+      "nome": "TOPICOS ESPECIAIS ENG. DE SOFTWARE",
+      "semestre": 99,
+      "preRequisitos": [
+        "CC132"
+      ],
+      "creditos": 4
+    }
+  ]
+}

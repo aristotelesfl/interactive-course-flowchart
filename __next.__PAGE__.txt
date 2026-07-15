@@ -1,10 +1,9 @@
 1:"$Sreact.fragment"
-2:I[47257,["/interactive-course-flowchart/_next/static/chunks/42879de7b8087bc9.js"],"ClientPageRoot"]
-3:I[31713,["/interactive-course-flowchart/_next/static/chunks/0c6932420e96e619.js","/interactive-course-flowchart/_next/static/chunks/4aa6e4ee02b86350.js"],"default"]
-6:I[97367,["/interactive-course-flowchart/_next/static/chunks/42879de7b8087bc9.js"],"OutletBoundary"]
+2:I[47257,["/interactive-course-flowchart/_next/static/chunks/ff1a16fafef87110.js","/interactive-course-flowchart/_next/static/chunks/247eb132b7f7b574.js"],"ClientPageRoot"]
+3:I[31713,["/interactive-course-flowchart/_next/static/chunks/0c5087808b59a8bb.js","/interactive-course-flowchart/_next/static/chunks/2a245e43e74058c3.js","/interactive-course-flowchart/_next/static/chunks/f726217d3ed27539.js","/interactive-course-flowchart/_next/static/chunks/ed29cb4e6645035d.js"],"default"]
+6:I[97367,["/interactive-course-flowchart/_next/static/chunks/ff1a16fafef87110.js","/interactive-course-flowchart/_next/static/chunks/247eb132b7f7b574.js"],"OutletBoundary"]
 7:"$Sreact.suspense"
-:HL["/interactive-course-flowchart/_next/static/chunks/9a169fa1f93d10db.css","style"]
-0:{"buildId":"Bicx7yw5Siaz0gCBz3a_H","rsc":["$","$1","c",{"children":[["$","$L2",null,{"Component":"$3","serverProvidedParams":{"searchParams":{},"params":{},"promises":["$@4","$@5"]}}],[["$","link","0",{"rel":"stylesheet","href":"/interactive-course-flowchart/_next/static/chunks/9a169fa1f93d10db.css","precedence":"next"}],["$","script","script-0",{"src":"/interactive-course-flowchart/_next/static/chunks/4aa6e4ee02b86350.js","async":true}]],["$","$L6",null,{"children":["$","$7",null,{"name":"Next.MetadataOutlet","children":"$@8"}]}]]}],"loading":null,"isPartial":false}
+0:{"buildId":"4B4HDSgpLv_wjOy44rcMd","rsc":["$","$1","c",{"children":[["$","$L2",null,{"Component":"$3","serverProvidedParams":{"searchParams":{},"params":{},"promises":["$@4","$@5"]}}],[["$","script","script-0",{"src":"/interactive-course-flowchart/_next/static/chunks/2a245e43e74058c3.js","async":true}],["$","script","script-1",{"src":"/interactive-course-flowchart/_next/static/chunks/f726217d3ed27539.js","async":true}],["$","script","script-2",{"src":"/interactive-course-flowchart/_next/static/chunks/ed29cb4e6645035d.js","async":true}]],["$","$L6",null,{"children":["$","$7",null,{"name":"Next.MetadataOutlet","children":"$@8"}]}]]}],"loading":null,"isPartial":false}
 4:{}
 5:"$0:rsc:props:children:0:props:serverProvidedParams:params"
 8:null
