@@ -19,13 +19,15 @@ import {
 import { useProgress } from "@/hooks/use-progress";
 import { useTheme } from "@/hooks/use-theme";
 import { calcularResumoCreditos } from "@/lib/creditos";
-import { gradeIdFromSlugs } from "@/lib/slug";
+import { gradeIdFromSlugs, slugify } from "@/lib/slug";
 
 function FluxogramaConteudo() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const cursoSlug = searchParams.get("curso") ?? DEFAULT_CURSO_SLUG;
-  const fluxoSlug = searchParams.get("fluxo") ?? DEFAULT_FLUXO_SLUG;
+  // slugify() normaliza qualquer valor cru vindo da URL (inclusive
+  // caracteres como "/" que quebrariam um path do Firestore).
+  const cursoSlug = slugify(searchParams.get("curso") ?? DEFAULT_CURSO_SLUG);
+  const fluxoSlug = slugify(searchParams.get("fluxo") ?? DEFAULT_FLUXO_SLUG);
   const gradeId = gradeIdFromSlugs(cursoSlug, fluxoSlug);
 
   const trocarSelecao = useCallback(

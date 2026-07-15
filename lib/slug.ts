@@ -1,4 +1,12 @@
 /**
+ * Remove acentos (NFD) de um texto — usado tanto pra slug quanto pra
+ * normalizar texto extraído de PDF antes de comparações/regex.
+ */
+export function removerAcentos(texto: string): string {
+  return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+/**
  * Slug determinístico usado tanto para IDs de documentos no Firestore
  * quanto para os query params da URL (?curso=...&fluxo=...). curso e
  * fluxo são "sluggificados" separadamente para formar a hierarquia
@@ -8,9 +16,7 @@
  * exatamente esta mesma função para os slugs continuarem batendo.
  */
 export function slugify(texto: string): string {
-  return texto
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+  return removerAcentos(texto)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");

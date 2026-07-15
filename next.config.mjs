@@ -13,9 +13,6 @@ const nextConfig = {
     // sincronia com o basePath acima em qualquer alvo de deploy.
     NEXT_PUBLIC_BASE_PATH: basePath,
   },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   images: {
     unoptimized: true,
   },

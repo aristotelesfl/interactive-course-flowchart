@@ -1,7 +1,7 @@
 import { BASE_PATH } from "./config";
 import { SEMESTRE_OPTATIVAS } from "./data";
 import { ordenarDisciplinasParaFluxo } from "./ordenar-disciplinas";
-import { gradeIdFromSlugs, slugify } from "./slug";
+import { gradeIdFromSlugs, removerAcentos, slugify } from "./slug";
 import type { Disciplina, Grade } from "./types";
 
 /**
@@ -30,11 +30,6 @@ export interface ParsedGrade {
   fluxoSlug: string;
   /** Problemas não fatais encontrados (ex.: pré-requisito de outro fluxo). */
   warnings: string[];
-}
-
-/** Remove acentos (NFD) para comparações de texto do PDF. */
-function semAcentos(texto: string): string {
-  return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
 /**
@@ -121,13 +116,13 @@ function extrairCampoCabecalho(
   ateRotulo?: string
 ): string | null {
   for (const linha of linhas) {
-    const semAcento = semAcentos(linha).toUpperCase();
+    const semAcento = removerAcentos(linha).toUpperCase();
     const inicio = semAcento.indexOf(`${rotulo}:`);
     if (inicio === -1) continue;
 
     let trecho = linha.slice(inicio + rotulo.length + 1);
     if (ateRotulo) {
-      const fim = semAcentos(trecho).toUpperCase().indexOf(`${ateRotulo}:`);
+      const fim = removerAcentos(trecho).toUpperCase().indexOf(`${ateRotulo}:`);
       if (fim !== -1) trecho = trecho.slice(0, fim);
     }
     const valor = trecho.trim();
@@ -152,7 +147,7 @@ export async function parseGradePdf(data: ArrayBuffer): Promise<ParsedGrade> {
   }
 
   const ehGradeCurricular = linhas.some((l) =>
-    semAcentos(l).toUpperCase().includes("GRADE CURRICULAR")
+    removerAcentos(l).toUpperCase().includes("GRADE CURRICULAR")
   );
 
   const curso = extrairCampoCabecalho(linhas, "CURSO", "TURNO");
@@ -185,7 +180,7 @@ export async function parseGradePdf(data: ArrayBuffer): Promise<ParsedGrade> {
   const vistos = new Set<string>();
 
   for (const linha of linhas) {
-    const match = semAcentos(linha).match(ROW_RE);
+    const match = removerAcentos(linha).match(ROW_RE);
     if (!match) continue;
 
     const [, semestre, id, nome, creditos, categoria, preReqsBrutos] = match;

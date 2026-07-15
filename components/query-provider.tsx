@@ -17,7 +17,10 @@ export function QueryProvider({ children }: { children: ReactNode }) {
             // Dados estáticos (ementas, grades): uma busca por sessão basta.
             staleTime: Infinity,
             gcTime: 1000 * 60 * 60,
-            retry: 1,
+            // Sem retry: os dados vêm do Firestore ou de um JSON estático
+            // — um "não encontrado" não vira "encontrado" tentando de
+            // novo, então falha uma vez e mostra o erro.
+            retry: false,
           },
         },
       })
