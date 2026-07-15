@@ -110,6 +110,18 @@ function temCicloDePreRequisitos(disciplinas: Disciplina[]): boolean {
   return disciplinas.some((d) => visita(d.id));
 }
 
+/**
+ * Insere espaço depois de um ponto colado na próxima palavra (ex.:
+ * "FUND.HIST.TEORIC." → "FUND. HIST. TEORIC.") — abreviações assim
+ * vêm sem espaço em alguns nomes de disciplina/curso no PDF e quebram
+ * a quebra de linha no card do fluxograma. Não mexe em pontos já
+ * seguidos de espaço (abreviação "normal") nem em pontos no fim da
+ * string.
+ */
+function espacarAposPonto(texto: string): string {
+  return texto.replace(/\.(?=[A-Za-zÀ-ÿ])/g, ". ");
+}
+
 function extrairCampoCabecalho(
   linhas: string[],
   rotulo: string,
@@ -150,7 +162,8 @@ export async function parseGradePdf(data: ArrayBuffer): Promise<ParsedGrade> {
     removerAcentos(l).toUpperCase().includes("GRADE CURRICULAR")
   );
 
-  const curso = extrairCampoCabecalho(linhas, "CURSO", "TURNO");
+  const cursoBruto = extrairCampoCabecalho(linhas, "CURSO", "TURNO");
+  const curso = cursoBruto ? espacarAposPonto(cursoBruto) : cursoBruto;
   const turno = extrairCampoCabecalho(linhas, "TURNO") ?? "";
   const nivel = extrairCampoCabecalho(linhas, "NIVEL", "FLUXO") ?? "";
   const fluxoBruto = extrairCampoCabecalho(linhas, "FLUXO");
@@ -196,7 +209,7 @@ export async function parseGradePdf(data: ArrayBuffer): Promise<ParsedGrade> {
 
     disciplinas.push({
       id,
-      nome: nome.trim(),
+      nome: espacarAposPonto(nome.trim()),
       semestre: Number(semestre),
       creditos: Number(creditos),
       preRequisitos: preReqsBrutos.match(CODIGO_RE) ?? [],
