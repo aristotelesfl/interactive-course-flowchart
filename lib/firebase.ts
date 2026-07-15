@@ -1,5 +1,11 @@
 import { getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
+import {
+  getAnalytics,
+  isSupported as analyticsIsSupported,
+  logEvent,
+  type Analytics,
+} from "firebase/analytics";
 import { getFirestore, type Firestore } from "firebase/firestore";
 
 declare global {
@@ -28,6 +34,7 @@ const firebaseConfig = {
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 /**
@@ -87,4 +94,43 @@ export function inicializarAppCheck(): void {
 
 export function getDb(): Firestore {
   return getFirestore(getFirebaseApp());
+}
+
+let analyticsPromise: Promise<Analytics | null> | null = null;
+
+/**
+ * Inicializa o Firebase Analytics (Google Analytics) uma única vez, só
+ * no navegador — chamadas concorrentes (comum em dev com Strict Mode)
+ * compartilham a mesma promise em vez de descartar a segunda. O SDK não
+ * envia page_view sozinho ao navegar entre rotas client-side (isso é
+ * comportamento do gtag.js clássico, não deste SDK) — cada mudança de
+ * rota chama registrarPageView() explicitamente (ver
+ * components/analytics-tracker.tsx).
+ *
+ * Sem NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID configurada, é um no-op.
+ */
+function garantirAnalytics(): Promise<Analytics | null> {
+  if (!analyticsPromise) {
+    analyticsPromise =
+      typeof window === "undefined" || !firebaseConfig.measurementId
+        ? Promise.resolve(null)
+        : analyticsIsSupported().then((suportado) =>
+            suportado ? getAnalytics(getFirebaseApp()) : null
+          );
+  }
+  return analyticsPromise;
+}
+
+/** Registra uma visualização de página (chamado a cada troca de rota). */
+export async function registrarPageView(
+  caminho: string,
+  titulo?: string
+): Promise<void> {
+  const instancia = await garantirAnalytics();
+  if (!instancia) return;
+  logEvent(instancia, "page_view", {
+    page_path: caminho,
+    page_title: titulo,
+    page_location: window.location.href,
+  });
 }
