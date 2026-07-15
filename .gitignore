@@ -18,6 +18,7 @@ yarn-error.log*
 
 # env files
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -25,3 +26,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# gerado por scripts/copy-pdf-worker.mjs
+public/pdf.worker.min.js
+
+# claude code: worktrees de sessões em background e config pessoal
+.claude/worktrees/
+.claude/settings.local.json
+
+# cache de skills de agentes de IA (Firebase, Xcode etc.) — refetchável,
+# não faz parte do código do projeto
+.agents/
+.claude/skills/
+skills-lock.json

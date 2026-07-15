@@ -2,47 +2,58 @@
 
 import { useState, useCallback, useMemo } from "react";
 import type { Disciplina } from "@/lib/types";
-import { disciplinas, getDisciplinaById } from "@/lib/data";
 
 /**
- * Hook customizado para gerenciar o estado e a lógica do fluxograma
+ * Hook customizado para gerenciar o estado e a lógica do fluxograma.
+ * Recebe a lista de disciplinas da grade em exibição.
  */
-export function useFlowchart() {
+export function useFlowchart(disciplinas: Disciplina[]) {
   const [disciplinaSelecionada, setDisciplinaSelecionada] =
     useState<Disciplina | null>(null);
   const [disciplinaHover, setDisciplinaHover] = useState<string | null>(null);
 
+  const disciplinasById = useMemo(
+    () => new Map(disciplinas.map((d) => [d.id, d])),
+    [disciplinas]
+  );
+
   /**
    * Encontra todos os pré-requisitos de uma disciplina (recursivamente)
    */
-  const encontrarPreRequisitos = useCallback((id: string): Set<string> => {
-    const resultado = new Set<string>();
-    const disciplina = getDisciplinaById(id);
+  const encontrarPreRequisitos = useCallback(
+    (id: string): Set<string> => {
+      const resultado = new Set<string>();
+      const disciplina = disciplinasById.get(id);
 
-    disciplina?.preRequisitos.forEach((preReqId) => {
-      if (resultado.has(preReqId)) return;
-      resultado.add(preReqId);
-      encontrarPreRequisitos(preReqId).forEach((pr) => resultado.add(pr));
-    });
+      disciplina?.preRequisitos.forEach((preReqId) => {
+        if (resultado.has(preReqId)) return;
+        resultado.add(preReqId);
+        encontrarPreRequisitos(preReqId).forEach((pr) => resultado.add(pr));
+      });
 
-    return resultado;
-  }, []);
+      return resultado;
+    },
+    [disciplinasById]
+  );
 
   /**
    * Encontra todas as disciplinas que dependem de uma disciplina (recursivamente)
    */
-  const encontrarDependentes = useCallback((id: string): Set<string> => {
-    const resultado = new Set<string>();
+  const encontrarDependentes = useCallback(
+    (id: string): Set<string> => {
+      const resultado = new Set<string>();
 
-    disciplinas.forEach((d) => {
-      if (d.preRequisitos.includes(id) && !resultado.has(d.id)) {
-        resultado.add(d.id);
-        encontrarDependentes(d.id).forEach((dep) => resultado.add(dep));
-      }
-    });
+      disciplinas.forEach((d) => {
+        if (d.preRequisitos.includes(id) && !resultado.has(d.id)) {
+          resultado.add(d.id);
+          encontrarDependentes(d.id).forEach((dep) => resultado.add(dep));
+        }
+      });
 
-    return resultado;
-  }, []);
+      return resultado;
+    },
+    [disciplinas]
+  );
 
   /**
    * Calcula o fluxo completo (pré-requisitos + a própria + dependentes)
@@ -64,10 +75,10 @@ export function useFlowchart() {
     (disciplina: Disciplina): Disciplina[] => {
       const preReqIds = encontrarPreRequisitos(disciplina.id);
       return Array.from(preReqIds)
-        .map((id) => getDisciplinaById(id))
+        .map((id) => disciplinasById.get(id))
         .filter((d): d is Disciplina => d !== undefined);
     },
-    [encontrarPreRequisitos]
+    [encontrarPreRequisitos, disciplinasById]
   );
 
   /**
@@ -77,10 +88,10 @@ export function useFlowchart() {
     (disciplina: Disciplina): Disciplina[] => {
       const depIds = encontrarDependentes(disciplina.id);
       return Array.from(depIds)
-        .map((id) => getDisciplinaById(id))
+        .map((id) => disciplinasById.get(id))
         .filter((d): d is Disciplina => d !== undefined);
     },
-    [encontrarDependentes]
+    [encontrarDependentes, disciplinasById]
   );
 
   const handleDisciplinaClick = useCallback((disciplina: Disciplina) => {
@@ -99,6 +110,7 @@ export function useFlowchart() {
     disciplinaSelecionada,
     disciplinaHover,
     fluxoDestacado,
+    disciplinasById,
     handleDisciplinaClick,
     handleDisciplinaHover,
     fecharSidebar,

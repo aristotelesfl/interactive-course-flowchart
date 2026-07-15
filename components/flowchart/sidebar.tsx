@@ -4,10 +4,12 @@ import { memo } from "react";
 import { X, BookOpen, GitBranch, ArrowRight, CheckCircle2 } from "lucide-react";
 import type { Disciplina } from "@/lib/types";
 import { getSemestreLabel } from "@/lib/data";
+import { useEmenta } from "@/hooks/use-ementas";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
@@ -32,6 +34,8 @@ export const Sidebar = memo(function Sidebar({
   onClose,
   onDisciplinaClick,
 }: SidebarProps) {
+  const { ementa, isLoading: ementaLoading } = useEmenta(disciplina?.id);
+
   if (!disciplina) return null;
 
   return (
@@ -99,9 +103,21 @@ export const Sidebar = memo(function Sidebar({
                   <BookOpen className="h-4 w-4 text-primary" />
                   <h3 className="font-semibold text-foreground">Ementa</h3>
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {disciplina.ementa}
-                </p>
+                {ementaLoading ? (
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-2/3" />
+                  </div>
+                ) : ementa ? (
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {ementa}
+                  </p>
+                ) : (
+                  <p className="text-sm text-muted-foreground italic">
+                    Ementa não disponível
+                  </p>
+                )}
               </section>
 
               <Separator />

@@ -14,12 +14,8 @@ import {
 import "@xyflow/react/dist/style.css";
 
 import { useFlowchart } from "@/hooks/use-flowchart";
-import {
-  disciplinas,
-  getDisciplinaById,
-  getDisciplinasPorSemestre,
-  getSemestreLabel,
-} from "@/lib/data";
+import { getDisciplinasPorSemestre, getSemestreLabel } from "@/lib/data";
+import type { Disciplina } from "@/lib/types";
 import { DisciplineNode, type DisciplinaNode } from "./discipline-node";
 import { SemesterHeaderNode } from "./semester-header-node";
 import { Sidebar } from "./sidebar";
@@ -36,6 +32,7 @@ const HEADER_Y = 0;
 const FIRST_ROW_Y = 72;
 
 interface FlowchartProps {
+  disciplinas: Disciplina[];
   concluidas: Set<string>;
   toggleConcluida: (id: string) => void;
   colorMode?: "light" | "dark";
@@ -47,6 +44,7 @@ interface FlowchartProps {
  * arestas = pré-requisitos (ancoradas aos Handles dos nós).
  */
 export function Flowchart({
+  disciplinas,
   concluidas,
   toggleConcluida,
   colorMode = "light",
@@ -54,19 +52,20 @@ export function Flowchart({
   const {
     disciplinaSelecionada,
     fluxoDestacado,
+    disciplinasById,
     handleDisciplinaClick,
     handleDisciplinaHover,
     fecharSidebar,
     getPreRequisitosParaSidebar,
     getDependentesParaSidebar,
-  } = useFlowchart();
+  } = useFlowchart(disciplinas);
 
   const hasHover = fluxoDestacado.size > 0;
 
   // Layout estático: posições dos nós, cabeçalhos e arestas base.
-  // Calculado uma única vez (a estrutura do currículo não muda em runtime).
+  // Recalculado apenas quando a grade em exibição muda.
   const { positions, headerNodes, baseEdges } = useMemo(() => {
-    const porSemestre = getDisciplinasPorSemestre();
+    const porSemestre = getDisciplinasPorSemestre(disciplinas);
     const semestres = Array.from(porSemestre.keys()).sort((a, b) => a - b);
 
     const positions = new Map<string, { x: number; y: number }>();
@@ -104,7 +103,7 @@ export function Flowchart({
     });
 
     return { positions, headerNodes, baseEdges };
-  }, []);
+  }, [disciplinas]);
 
   // Nós dinâmicos: reagem a hover (destaque/esmaecido) e a concluídas.
   const nodes = useMemo<Node[]>(() => {
@@ -126,7 +125,7 @@ export function Flowchart({
     });
 
     return [...headerNodes, ...disciplinaNodes];
-  }, [fluxoDestacado, hasHover, concluidas, headerNodes, positions, toggleConcluida]);
+  }, [disciplinas, fluxoDestacado, hasHover, concluidas, headerNodes, positions, toggleConcluida]);
 
   // Arestas dinâmicas: destaca o fluxo em hover, esmaece o resto.
   const edges = useMemo<Edge[]>(() => {
@@ -164,10 +163,10 @@ export function Flowchart({
   const onNodeClick = useCallback<NodeMouseHandler>(
     (_, node) => {
       if (node.type !== "disciplina") return;
-      const disciplina = getDisciplinaById(node.id);
+      const disciplina = disciplinasById.get(node.id);
       if (disciplina) handleDisciplinaClick(disciplina);
     },
-    [handleDisciplinaClick]
+    [handleDisciplinaClick, disciplinasById]
   );
 
   return (

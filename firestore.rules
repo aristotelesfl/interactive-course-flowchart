@@ -1,0 +1,120 @@
+rules_version = '2';
+
+// ===============================================================
+// Modelo de dados assumido
+// ===============================================================
+//
+// App público, sem autenticação: qualquer pessoa pode ler as grades
+// curriculares (dado público da UECE, sem PII — nome, matrícula e
+// código de validação do PDF são descartados antes de chegar aqui) e
+// cadastrar uma grade nova. Nada é editável nem removível pelo cliente
+// depois de criado: histórico imutável.
+//
+// Collection: grades/{gradeId}
+//   - a grade curricular completa. gradeId = "{cursoSlug}-{fluxoSlug}",
+//     determinístico a partir de curso+fluxo — dedup automática, pois
+//     um "create" sobre um ID existente vira "update", sempre negado.
+//   - id: string (obrigatório, igual ao ID do documento)
+//   - curso: string (obrigatório, 3–200 chars)
+//   - nivel: string (obrigatório, até 100 chars — pode vir vazio do parser)
+//   - turno: string (obrigatório, até 100 chars — pode vir vazio do parser)
+//   - fluxo: string (obrigatório, 1–20 chars)
+//   - disciplinas: list (obrigatório, 5–200 itens)
+//   - criadaEm: timestamp (obrigatório, deve ser request.time — gerado
+//     pelo servidor via serverTimestamp(), o cliente não escolhe a data)
+//
+// Collection: cursos/{cursoSlug}
+//   - identidade do curso (um doc por curso, não por fluxo — a lista
+//     de cursos não cresce a cada fluxo novo cadastrado). Criado uma
+//     única vez; fluxos adicionais do mesmo curso não voltam a tocá-lo.
+//   - slug: string (obrigatório, igual ao ID do documento)
+//   - curso: string (obrigatório, 3–200 chars)
+//
+//   Subcollection: cursos/{cursoSlug}/fluxos/{fluxoSlug}
+//     - um doc por fluxo (variante curricular) daquele curso.
+//     - id: string (obrigatório, até 250 chars — aponta para grades/{id})
+//     - fluxo: string (obrigatório, 1–20 chars)
+//     - nivel: string (obrigatório, até 100 chars)
+//     - turno: string (obrigatório, até 100 chars)
+//
+// Limitação conhecida: a linguagem de regras do Firestore não permite
+// iterar sobre uma lista para validar cada item de "disciplinas"
+// individualmente. O tamanho da lista é limitado (5–200) e o limite de
+// 1 MiB por documento do próprio Firestore funciona como contenção
+// adicional contra payloads maliciosamente grandes.
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Funções auxiliares
+    // ===============================================================
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function validStringLength(field, minLen, maxLen) {
+      return request.resource.data[field] is string
+        && request.resource.data[field].size() >= minLen
+        && request.resource.data[field].size() <= maxLen;
+    }
+
+    // ===============================================================
+    // grades/{gradeId} — a grade curricular completa
+    // ===============================================================
+    match /grades/{gradeId} {
+      allow get, list: if true;
+
+      allow create: if
+        hasOnlyAllowedFields(
+          ['id', 'curso', 'nivel', 'turno', 'fluxo', 'disciplinas', 'criadaEm']
+        )
+        && request.resource.data.id == gradeId
+        && validStringLength('curso', 3, 200)
+        && validStringLength('nivel', 0, 100)
+        && validStringLength('turno', 0, 100)
+        && validStringLength('fluxo', 1, 20)
+        && request.resource.data.disciplinas is list
+        && request.resource.data.disciplinas.size() >= 5
+        && request.resource.data.disciplinas.size() <= 200
+        && request.resource.data.criadaEm == request.time;
+
+      allow update, delete: if false;
+    }
+
+    // ===============================================================
+    // cursos/{cursoSlug} — identidade do curso (um doc por curso)
+    // ===============================================================
+    match /cursos/{cursoSlug} {
+      allow get, list: if true;
+
+      allow create: if
+        hasOnlyAllowedFields(['slug', 'curso'])
+        && request.resource.data.slug == cursoSlug
+        && validStringLength('curso', 3, 200);
+
+      allow update, delete: if false;
+
+      // =============================================================
+      // cursos/{cursoSlug}/fluxos/{fluxoSlug} — variantes do curso
+      // =============================================================
+      match /fluxos/{fluxoSlug} {
+        allow get, list: if true;
+
+        allow create: if
+          hasOnlyAllowedFields(['id', 'fluxo', 'nivel', 'turno'])
+          && validStringLength('id', 1, 250)
+          && validStringLength('fluxo', 1, 20)
+          && validStringLength('nivel', 0, 100)
+          && validStringLength('turno', 0, 100);
+
+        allow update, delete: if false;
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

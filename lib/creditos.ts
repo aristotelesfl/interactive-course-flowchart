@@ -1,5 +1,5 @@
 import type { Disciplina } from "./types";
-import { disciplinas, SEMESTRE_OPTATIVAS } from "./data";
+import { SEMESTRE_OPTATIVAS } from "./data";
 
 /**
  * Categorias de crédito que compõem os requisitos para colar grau.
@@ -84,6 +84,7 @@ function creditosExigidosPorCategoria(
  * respeitando o teto de créditos de optativas.
  */
 export function calcularResumoCreditos(
+  disciplinas: Disciplina[],
   concluidas: Set<string>
 ): ResumoCreditos {
   const porCategoria: Record<Categoria, Disciplina[]> = {

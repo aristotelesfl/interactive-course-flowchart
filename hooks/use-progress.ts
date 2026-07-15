@@ -1,45 +1,44 @@
 "use client";
 
-import { useState, useCallback, useEffect, useMemo } from "react";
-import { disciplinas } from "@/lib/data";
+import { useState, useCallback, useEffect } from "react";
 
-const STORAGE_KEY = "disciplinas-concluidas";
+const STORAGE_KEY_PREFIX = "disciplinas-concluidas";
 
 /**
  * Hook para gerenciar o progresso do curso
- * Persiste disciplinas concluídas no localStorage
+ * Persiste disciplinas concluídas no localStorage, isolado por grade (gradeId)
  */
-export function useProgress() {
+export function useProgress(gradeId: string) {
   const [concluidas, setConcluidas] = useState<Set<string>>(new Set());
   const [isLoaded, setIsLoaded] = useState(false);
+  const storageKey = `${STORAGE_KEY_PREFIX}:${gradeId}`;
 
-  // Carrega dados do localStorage na montagem
+  // Carrega dados do localStorage quando a grade muda
   useEffect(() => {
+    setIsLoaded(false);
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const ids = JSON.parse(saved) as string[];
-        setConcluidas(new Set(ids));
-      }
+      const saved = localStorage.getItem(storageKey);
+      setConcluidas(saved ? new Set(JSON.parse(saved) as string[]) : new Set());
     } catch (error) {
       console.error("Erro ao carregar progresso:", error);
+      setConcluidas(new Set());
     }
     setIsLoaded(true);
-  }, []);
+  }, [storageKey]);
 
   // Salva no localStorage quando mudar
   useEffect(() => {
     if (isLoaded) {
       try {
         localStorage.setItem(
-          STORAGE_KEY,
+          storageKey,
           JSON.stringify(Array.from(concluidas))
         );
       } catch (error) {
         console.error("Erro ao salvar progresso:", error);
       }
     }
-  }, [concluidas, isLoaded]);
+  }, [concluidas, isLoaded, storageKey]);
 
   const toggleConcluida = useCallback((id: string) => {
     setConcluidas((prev) => {
@@ -58,20 +57,10 @@ export function useProgress() {
     [concluidas]
   );
 
-  // Estatísticas de progresso
-  const stats = useMemo(() => {
-    const total = disciplinas.length;
-    const completadas = concluidas.size;
-    const percentual = total > 0 ? Math.round((completadas / total) * 100) : 0;
-
-    return { total, completadas, percentual };
-  }, [concluidas]);
-
   return {
     concluidas,
     toggleConcluida,
     isConcluida,
-    stats,
     isLoaded,
   };
 }
